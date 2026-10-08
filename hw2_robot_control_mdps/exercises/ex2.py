@@ -19,7 +19,15 @@ def generate_quintic_spline_waypoints(start, end, num_points):
     Returns:
         np.ndarray: Generated waypoints.
     """
-    raise NotImplementedError()
+    start = np.asarray(start, dtype=float)
+    end = np.asarray(end, dtype=float)
+    # normalized time s in [0, 1]
+    s = np.linspace(0.0, 1.0, num_points)
+    # quintic time scaling: f(0)=0, f(1)=1, and zero velocity AND acceleration at both ends -> smooth start and stop
+    f_s = 10 * s**3 - 15 * s**4 + 6 * s**5
+    # broadcast f_s (num_points,) against the waypoint dimensions, e.g. (num_points, 1) * (3,) -> (num_points, 3)
+    f_s = f_s.reshape(-1, *([1] * start.ndim))
+    return start + (end - start) * f_s
 
 
 def pid_control(tracking_error_history, timestep, Kp=150.0, Ki=0.0, Kd=0.01):
@@ -44,5 +52,15 @@ def pid_control(tracking_error_history, timestep, Kp=150.0, Ki=0.0, Kd=0.01):
     Returns:
         np.ndarray: Control signal.
     """
-    raise NotImplementedError()
+    errors = np.atleast_2d(np.asarray(tracking_error_history, dtype=float))   # (T, num_joints)
+    # P: current error
+    P = errors[-1]
+    # I: accumulated error over the history, approximated as a Riemann sum
+    I = errors.sum(axis=0) * timestep
+    # D: finite-difference rate of change of the error; zero when only one sample exists
+    if len(errors) > 1:
+        D = (errors[-1] - errors[-2]) / timestep
+    else:
+        D = np.zeros_like(P)
+    return Kp * P + Ki * I + Kd * D
             

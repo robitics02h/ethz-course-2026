@@ -21,7 +21,10 @@ def reset_robot(default_qpos: np.ndarray) -> np.ndarray:
     Returns:
     - reset_qpos: np.ndarray. The joint positions to reset the robot to. Dimensionality: 1D array, Shape: (num_joints,).
     """
-    raise NotImplementedError()
+    # a different start pose every episode, so the policy learns to reach from anywhere rather than one memorised motion
+    noise = np.random.uniform(-0.5, 0.5, size=default_qpos.shape)
+    reset_qpos = default_qpos + noise
+    return reset_qpos
     
 
 
@@ -39,7 +42,13 @@ def reset_target_position(base_pos: np.ndarray) -> np.ndarray:
     Returns:
     - target_pos: np.ndarray. The 3D position of the target relative to the base. Dimensionality: 1D array, Shape: (3,).
     """
-    raise NotImplementedError()
+    # sample an offset inside a box in front of the robot, then shift it by the base position.
+    # The env writes the result straight into data.mocap_pos, i.e. it is a world-frame position.
+    low = np.array([0.2, -0.2, 0.1])
+    high = np.array([0.4, 0.2, 0.4])
+    offset = np.random.uniform(low, high)
+    target_pos = base_pos + offset
+    return target_pos
 
 
 def process_action(action: np.ndarray, jnt_range: np.ndarray) -> np.ndarray:
@@ -57,7 +66,11 @@ def process_action(action: np.ndarray, jnt_range: np.ndarray) -> np.ndarray:
     Returns:
     - target_qpos: np.ndarray. Target joint positions to apply as control. Dimensionality: 1D array, Shape: (num_joints,).
     """
-    raise NotImplementedError()
+    action = np.clip(action, -1.0, 1.0)              # guard against actions slightly outside [-1, 1]
+    low, high = jnt_range[:, 0], jnt_range[:, 1]
+    # linear map: -1 -> low, 0 -> midpoint, +1 -> high
+    target_qpos = low + (action + 1.0) * 0.5 * (high - low)
+    return target_qpos
 
 
 def compute_reward(ee_tracking_error: float) -> float:
@@ -80,7 +93,12 @@ def compute_reward(ee_tracking_error: float) -> float:
     Returns:
     - reward: float. The computed reward based on the tracking error. Dimensionality: scalar
     """
-    raise NotImplementedError()
+    # dense term: always gives a gradient of "closer is better" (1 at the target, decays with distance)
+    dense_reward = np.exp(-2.0 * ee_tracking_error)
+    # sparse term: bonus only for being within 5 mm, which rewards actually arriving instead of hovering nearby
+    sparse_reward = 1.0 if ee_tracking_error < 0.005 else 0.0
+    reward = dense_reward + sparse_reward
+    return float(reward)
 
 
 def get_obs(qpos: np.ndarray, ee_pos_w: np.ndarray, ee_rot_w: np.ndarray, base_pos_w: np.ndarray, base_rot_w: np.ndarray, target_pos_w: np.ndarray) -> np.ndarray:
@@ -109,4 +127,14 @@ def get_obs(qpos: np.ndarray, ee_pos_w: np.ndarray, ee_rot_w: np.ndarray, base_p
 
     Hints: You can use the provided functions quat_mul, quat_conjugate, quat_normalize, rot_mat_to_quat for quaternion operations.
     """
-    raise NotImplementedError()
+    # positions: translate to the base origin, then rotate into base axes. R_base maps base -> world, so R_base^T maps world -> base
+    ee_pos_base = base_rot_w.T @ (ee_pos_w - base_pos_w)
+    target_pos_base = base_rot_w.T @ (target_pos_w - base_pos_w)
+
+    # orientation: q_ee_in_base = q_base^-1 (x) q_ee_world  (MuJoCo quaternions are w, x, y, z; order matters)
+    base_quat_w = rot_mat_to_quat(base_rot_w)
+    ee_quat_w = rot_mat_to_quat(ee_rot_w)
+    ee_quat_base = quat_normalize(quat_mul(quat_conjugate(base_quat_w), ee_quat_w))
+
+    obs = np.concatenate([qpos, ee_pos_base, ee_quat_base, target_pos_base])   # 6 + 3 + 4 + 3 = 16
+    return obs
