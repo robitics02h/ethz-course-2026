@@ -1,0 +1,199 @@
+{
+  "status": "complete_no_benefit_from_simple_target_lag_bound",
+  "checkpoint": "ex3.pt",
+  "intervention": "Privileged diagnostic: project next mocap target to an 0.08 m sphere around the measured hand before applying the ordinary XYZ-delta action; gripper unchanged",
+  "diagnostic_limit_m": 0.08,
+  "limit_selection": "Training demonstration maximum with 10% margin rounded up to next cm; exclude original six validation episodes",
+  "inspection": {
+    "seed": 20275000,
+    "scenes": [
+      730,
+      763,
+      838,
+      874
+    ],
+    "role": "previously inspected failures, diagnostic only"
+  },
+  "development": {
+    "seed": 20281000,
+    "episodes": 500,
+    "hold_seed": 20281000,
+    "hold_episodes": 200,
+    "post_success_steps": 100
+  },
+  "checks": [
+    "Disabled intervention must reproduce historical trajectories exactly",
+    "No-intervention scenes must match between variants",
+    "Robot and cubes are never repositioned by the helper; only ordinary command deltas are applied",
+    "Gripper predictions are never modified by the intervention"
+  ],
+  "decision_rule": "This experiment diagnoses a causal hypothesis; simulator-internal mocap state is unavailable to the existing policy. No checkpoint promotion or official score claim, regardless of diagnostic success.",
+  "protected_sha256": {
+    "ex1.pt": "c0cff4f34f723126595bdc3784463c043d0d1ecde96fb8eb4196a69a3eea41fc",
+    "ex1_result.hwresult": "e98e54841c597f5a3a0a778d04ada19b3ee89472a7b12d452c3da6498abbbe9f",
+    "ex2.pt": "bbf0f0f25f0891daf3bc97b335a739a944cb48f68a66229a8252632a503da646",
+    "ex2_result.hwresult": "3bf7ad06131aed63a54d38ad5e31f36c13ff44c762d9cf7838340746ee9d445b",
+    "ex3.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+    "ex3_result.hwresult": "c1576ed588e159c914c2e5876acc8795018a4d1e8e014c5c388cdb3c45eae3cd",
+    "hw3/model.py": "c86d9e7be080002b5d3e18e508b9f349f7905ddb207752d06fe710979f6cd1eb",
+    "hw3/eval_utils.py": "1c31eed10e07456bb8243b519e179a42d2bdbb8557ac44ea0a38c4d101f5520d",
+    "hw3/sim_env.py": "661c861a23b9c23595916cf4ebe31afed1a696507a28a189e9a12968edd89174",
+    "student_eval/run_eval.py": "a9332c3bca42743fb6f094f2a5598017d72824ea838997d111e06fe7c46d8c63"
+  },
+  "results": {
+    "inspection": {
+      "baseline": {
+        "episodes": 4,
+        "stable_successes": 0,
+        "failures": {
+          "no_lift": 1,
+          "not_released": 3
+        }
+      },
+      "bounded": {
+        "episodes": 4,
+        "stable_successes": 0,
+        "failures": {
+          "no_lift": 1,
+          "not_released": 2,
+          "transport_or_place": 1
+        }
+      }
+    },
+    "dev": {
+      "baseline": {
+        "episodes": 500,
+        "stable_successes": 497,
+        "failures": {
+          "no_lift": 1,
+          "not_released": 2
+        }
+      },
+      "bounded": {
+        "episodes": 500,
+        "stable_successes": 496,
+        "failures": {
+          "no_lift": 1,
+          "transport_or_place": 1,
+          "not_released": 2
+        }
+      }
+    },
+    "hold": {
+      "baseline": {
+        "episodes": 200,
+        "stable_successes": 199,
+        "failures": {
+          "no_lift": 1
+        }
+      },
+      "bounded": {
+        "episodes": 200,
+        "stable_successes": 199,
+        "failures": {
+          "no_lift": 1
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "inspection": {
+      "fixed": [],
+      "regressed": [],
+      "affected": [
+        730,
+        763,
+        874
+      ],
+      "exact_two_sided_p": 1.0
+    },
+    "dev": {
+      "fixed": [],
+      "regressed": [
+        221
+      ],
+      "affected": [
+        9,
+        181,
+        211,
+        221,
+        257,
+        317,
+        323,
+        477
+      ],
+      "exact_two_sided_p": 1.0
+    },
+    "hold": {
+      "fixed": [],
+      "regressed": [],
+      "affected": [
+        9,
+        181
+      ],
+      "exact_two_sided_p": 1.0
+    }
+  },
+  "baseline_success_peak_lag_percentiles_m": {
+    "50": 0.045641975859813166,
+    "95": 0.05809693886968576,
+    "99": 0.06366701423824148,
+    "100": 0.24253950170631747
+  },
+  "expert_diagnostic": {
+    "episodes": 4,
+    "successes": 4,
+    "seed": 20281000,
+    "scenes": [
+      9,
+      221,
+      257,
+      477
+    ],
+    "max_lag_m": 0.06787695415351591,
+    "role": "diagnostic, not a learned-policy score and not new training data"
+  },
+  "verification": {
+    "disabled_preserves_action_object": true,
+    "inside_preserves_action_object": true,
+    "bound_verified": true,
+    "projection_preserves_direction": true,
+    "gripper_unchanged": true,
+    "helper_does_not_mutate_simulator_or_input": true,
+    "unsupported_action_space_rejected": true,
+    "disabled_intervention_reproduces_four_original_800_step_traces_bitwise": true,
+    "inspection_gripper_commands_unmodified": true,
+    "unaffected_development_traces_bitwise_identical": 492,
+    "intervened_development_prefixes_bitwise_identical": 8,
+    "all_500_development_gripper_commands_unmodified": true
+  },
+  "policy_changed": false,
+  "official_evaluation_run": false,
+  "decision": "Keep all submitted models and official results unchanged. Do not implement this privileged bound in the deployed policy.",
+  "findings": [
+    "Training-demo maximum target lag was 0.0681104 m; an 0.08 m bound was fixed before rollout outcomes were observed.",
+    "The four previously inspected failures remained failures after bounding. Scene763 had already missed its grasp well before the first intervention.",
+    "Fresh paired500: original497, bounded496. Zero fixes and one regression (scene221), which the original policy eventually recovered despite a peak proposed-target lag of 0.24254 m.",
+    "Only8 of500 trajectories were affected; all492 other trajectories and every pre-intervention prefix reproduced bitwise.",
+    "Both variants achieved199/200 when continuing100steps after first stable success on the first200 development scenes; this subset is not independent.",
+    "The original scripted teacher completed all four inspected development scenes (9,221,257,477), with peak lag below0.068m.",
+    "Large lag can be a consequence or amplifier of earlier errors. This experiment establishes only that this simple8cm bound did not improve these scenes; it does not rule out all causal roles for tracking error."
+  ],
+  "next_experiment": "Add complete ordinary demonstrations concentrated on difficult but valid initial geometries, preserving the established continuous policy and action semantics; select on development scenes and confirm on fresh seeds.",
+  "commands": {
+    "calibration": ".venv/bin/python scripts/analyze_multicube_target_lag.py --raw-zarr datasets/raw/multi_cube/scripted/ex3_initial60/multicube_scripted.zarr datasets/raw/multi_cube/scripted/ex3_coverage240/multicube_scripted.zarr --exclude-episodes 28 55 18 24 7 17 --output artifacts/ex3/target_lag/demonstration_lag.json",
+    "inspection_template": ".venv/bin/python scripts/diagnose_multicube_policy.py --checkpoint ex3.pt --seed 20275000 --episodes 875 --scene-indices 730 763 838 874 --target-lag-limit LIMIT --output OUTPUT --trace-dir TRACES",
+    "development_template": ".venv/bin/python scripts/evaluate_multicube_parallel.py --checkpoint ex3.pt --seed 20281000 --episodes 500 --workers 4 --target-lag-limit LIMIT --output OUTPUT --trace-dir TRACES",
+    "hold_template": ".venv/bin/python scripts/evaluate_multicube_parallel.py --checkpoint ex3.pt --seed 20281000 --episodes 200 --workers 4 --target-lag-limit LIMIT --post-success-steps 100 --output OUTPUT",
+    "limits": {
+      "baseline": 0.0,
+      "bounded": 0.08
+    }
+  },
+  "protected_files_unchanged": true,
+  "diagnostic_code_sha256": {
+    "scripts/analyze_multicube_target_lag.py": "7023296646815edf7802d9576546bf8143f9ddf8505de1bfdee1b32faa8d0487",
+    "scripts/diagnose_multicube_policy.py": "6b3c55aa8ccbde5e4332adaa983af8a892221f3d9e9364e1c2114e92059210ab",
+    "scripts/evaluate_multicube_parallel.py": "ee4b86ff7e42a2d037e70869c3ce24ab61fd502464342be74614618062985846"
+  }
+}

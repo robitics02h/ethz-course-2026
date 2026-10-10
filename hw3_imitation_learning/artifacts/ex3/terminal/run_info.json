@@ -1,0 +1,180 @@
+{
+  "status": "complete_candidate_rejected_incumbent_retained",
+  "initial_checkpoint": "checkpoints/multi_cube/ex3_coverage300_warm.pt",
+  "intervention": "60 physical open-retreat-hold suffixes, 5% sampling; all original 300 demonstrations retained",
+  "generation": {
+    "seed": 20276000,
+    "episodes": 60,
+    "place_offset_m": [
+      0.006,
+      0.006,
+      0.012
+    ],
+    "retreat_offset_m": [
+      0.008,
+      0.008,
+      0.01
+    ],
+    "hold_steps": [
+      90,
+      110
+    ],
+    "control_hz": 10
+  },
+  "training": {
+    "epochs": 20,
+    "lr": 1e-05,
+    "seed": 42,
+    "normalizer": "frozen",
+    "validation": "original six episode IDs",
+    "selection": "lowest validation action MSE",
+    "control": "same update count, seed, replacement sampling; new-data fraction zero"
+  },
+  "development": {
+    "seed": 20277000,
+    "episodes": 500,
+    "hold_episodes": 200,
+    "post_success_steps": 100
+  },
+  "confirmation": {
+    "seed": 20278000,
+    "episodes": 5000,
+    "gate": "5% candidate must be no worse than both incumbent and zero-suffix control on regular and hold development tests"
+  },
+  "promotion_rule": "Independent confirmation must improve incumbent with exact paired two-sided p<0.05 and official score >=99; otherwise preserve current submission",
+  "hashes": {
+    "ex3.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+    "ex3_result.hwresult": "c1576ed588e159c914c2e5876acc8795018a4d1e8e014c5c388cdb3c45eae3cd",
+    "checkpoints/multi_cube/ex3_coverage300_warm.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85"
+  },
+  "verification": {
+    "control": {
+      "checkpoint": "checkpoints/multi_cube/ex3_terminal_control.pt",
+      "epoch": 15,
+      "val_loss": 0.06072136696402718,
+      "new_data_fraction": 0,
+      "sampling_boundary": 92329,
+      "normalizer_unchanged": true,
+      "original_300_demo_group_preserved": true
+    },
+    "candidate": {
+      "checkpoint": "checkpoints/multi_cube/ex3_terminal5.pt",
+      "epoch": 12,
+      "val_loss": 0.06137972177712472,
+      "new_data_fraction": 0.05,
+      "sampling_boundary": 92329,
+      "normalizer_unchanged": true,
+      "original_300_demo_group_preserved": true
+    }
+  },
+  "terminal_transitions": 9248,
+  "results": {
+    "dev": {
+      "baseline": {
+        "episodes": 500,
+        "stable_successes": 497,
+        "failures": {
+          "not_released": 2,
+          "no_lift": 1
+        }
+      },
+      "control": {
+        "episodes": 500,
+        "stable_successes": 498,
+        "failures": {
+          "not_released": 2
+        }
+      },
+      "candidate": {
+        "episodes": 500,
+        "stable_successes": 491,
+        "failures": {
+          "transport_or_place": 5,
+          "not_released": 4
+        }
+      }
+    },
+    "hold": {
+      "baseline": {
+        "episodes": 200,
+        "stable_successes": 199,
+        "failures": {
+          "not_released": 1
+        }
+      },
+      "control": {
+        "episodes": 200,
+        "stable_successes": 199,
+        "failures": {
+          "not_released": 1
+        }
+      },
+      "candidate": {
+        "episodes": 200,
+        "stable_successes": 197,
+        "failures": {
+          "transport_or_place": 1,
+          "not_released": 2
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "dev_control": {
+      "fixed": [
+        455
+      ],
+      "regressed": []
+    },
+    "dev_candidate": {
+      "fixed": [
+        201,
+        455
+      ],
+      "regressed": [
+        114,
+        147,
+        205,
+        246,
+        322,
+        383,
+        411,
+        429
+      ]
+    },
+    "hold_control": {
+      "fixed": [],
+      "regressed": []
+    },
+    "hold_candidate": {
+      "fixed": [],
+      "regressed": [
+        114,
+        147
+      ]
+    }
+  },
+  "official_candidate_successes": 99,
+  "audit": {
+    "episodes": 60,
+    "successes": 60,
+    "max_ee_error_m": 3.010393812008516e-08
+  },
+  "confirmation_ran": false,
+  "confirmation_skip_reason": "Candidate failed the predeclared development gate on both regular and hold diagnostics.",
+  "decision": "Do not promote either new checkpoint. Preserve existing ex3.pt and ex3_result.hwresult. 5% terminal data did not improve the matched 0% control or incumbent.",
+  "findings": [
+    "Candidate fixed 2 baseline failures and introduced 8 new failures on development500.",
+    "All three models retained strict stability for the full extra100 control steps after first stable success on the tested200 scenes. Hold-score differences arise before reaching success, not subsequent instability.",
+    "No claim that terminal data always hurts; this particular 5% suffix mixture and training configuration underperformed."
+  ],
+  "checks": [
+    "All new suffixes contain only open-gripper command labels.",
+    "Physical prefixes replayed before each suffix; no simulator reset or cube teleport at the suffix boundary.",
+    "Sampling boundary 92329 preserves both original stores as the 300-demo base group.",
+    "Frozen normalization/validation and unchanged network architecture verified.",
+    "Hold diagnostic first-success times exactly match regular evaluation on all 200 paired scenes for all three models.",
+    "Submission hashes unchanged."
+  ],
+  "next_experiment": "If continuing, separately test a binary gripper head while protecting learned xyz behavior; do not mix more terminal-only data without new evidence."
+}

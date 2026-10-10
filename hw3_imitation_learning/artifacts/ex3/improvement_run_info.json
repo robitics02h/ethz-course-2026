@@ -1,0 +1,76 @@
+{
+  "checkpoint": "ex3.pt",
+  "sha256": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+  "baseline_backup": "artifacts/ex3/baseline15.pt",
+  "data_episodes": 60,
+  "additional_data_collected": 0,
+  "training_episodes": 54,
+  "validation_episodes": [
+    28,
+    55,
+    18,
+    24,
+    7,
+    17
+  ],
+  "selected_epoch": 95,
+  "epochs_run": 100,
+  "val_loss": 0.0649935785585489,
+  "method": "Select target position using goal one-hot after recovering physical units; feed robot state, relative target/hand/bin geometry and target/bin positions to same MLP. Non-target positions and color identity are discarded after target selection. No scripted controller or action clipping at inference. Input normalization and feature mode stored in checkpoint buffers.",
+  "architecture": {
+    "hidden_width": 512,
+    "hidden_layers": 3,
+    "chunk_size": 4,
+    "state_dim": 24,
+    "action_dim": 4
+  },
+  "baseline_official": {
+    "successes": 15,
+    "episodes": 100
+  },
+  "official": {
+    "successes": 98,
+    "episodes": 100,
+    "score": 98,
+    "seed": 42,
+    "by_color": {
+      "red": [
+        34,
+        34
+      ],
+      "green": [
+        32,
+        33
+      ],
+      "blue": [
+        32,
+        33
+      ]
+    },
+    "harness_modified": false
+  },
+  "development": {
+    "seed": 4000,
+    "episodes": 30,
+    "baseline_stable": 2,
+    "candidate_stable": 29
+  },
+  "independent_holdout": {
+    "seed": 20263030,
+    "episodes": 60,
+    "stable_successes": 57,
+    "failures": {
+      "no_lift": 1,
+      "transport_or_place": 2
+    },
+    "used_for_training_or_checkpoint_selection": false
+  },
+  "selection": "Lowest validation MSE within 100 epochs; one goal-relative training run, then development/official/holdout evaluation. No per-scene tuning.",
+  "checks": [
+    "legacy flat checkpoint produces identical outputs",
+    "color permutation with same target has invariant features",
+    "goal-feature buffers restored with weights",
+    "synthetic representation unit checks; actual simulator development and held-out rollouts"
+  ],
+  "train_command": ".venv/bin/python scripts/train.py --policy multitask --goal-relative --zarr datasets/processed/multi_cube/ex3_initial60.zarr --state-keys state_ee_xyz state_gripper \"state_joints[:5]\" \"original_pos_cube_red[:3]\" \"original_pos_cube_green[:3]\" \"original_pos_cube_blue[:3]\" state_goal goal_pos --action-keys action_ee_xyz action_gripper --chunk-size 4 --d-model 512 --depth 3 --threads 2 --epochs 100 --output checkpoints/multi_cube/ex3_relative60.pt"
+}

@@ -1,0 +1,287 @@
+{
+  "status": "complete_binary_models_rejected_incumbent_retained",
+  "intervention": "Frozen existing network; four binary gripper logits trained with BCE on the original 300 demos",
+  "initial_checkpoint": "ex3.pt",
+  "control": "Initialize binary logits from the existing regression head; threshold at midpoint of demonstrated closed/open commands",
+  "training": {
+    "epochs": 30,
+    "lr": 0.0003,
+    "state_noise": 0.01,
+    "seed": 42,
+    "selection": "lowest BCE on original six held-out episodes",
+    "normalizer": "frozen",
+    "xyz": "all existing weights frozen"
+  },
+  "development": {
+    "seed": 20279000,
+    "episodes": 500,
+    "hold_episodes": 200,
+    "post_success_steps": 100
+  },
+  "confirmation": {
+    "seed": 20280000,
+    "episodes": 5000,
+    "gate": "A binary model must exceed incumbent on regular development success and be no worse on hold development; choose trained model on tie, otherwise highest development success"
+  },
+  "promotion_rule": "Fresh paired confirmation: strict success improves with exact two-sided paired p<0.05, official score >=99. Otherwise preserve submission.",
+  "hashes": {
+    "ex1.pt": "c0cff4f34f723126595bdc3784463c043d0d1ecde96fb8eb4196a69a3eea41fc",
+    "ex1_result.hwresult": "e98e54841c597f5a3a0a778d04ada19b3ee89472a7b12d452c3da6498abbbe9f",
+    "ex2.pt": "bbf0f0f25f0891daf3bc97b335a739a944cb48f68a66229a8252632a503da646",
+    "ex2_result.hwresult": "3bf7ad06131aed63a54d38ad5e31f36c13ff44c762d9cf7838340746ee9d445b",
+    "ex3.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+    "ex3_result.hwresult": "c1576ed588e159c914c2e5876acc8795018a4d1e8e014c5c388cdb3c45eae3cd"
+  },
+  "verification": {
+    "reference_states": 4015,
+    "legacy_predictions_bitwise_unchanged": true,
+    "models": {
+      "control": {
+        "xyz_weights_bitwise_unchanged": true,
+        "xyz_predictions_bitwise_unchanged": true,
+        "normalization_unchanged": true,
+        "physical_gripper_commands": [
+          -0.17399999499320984,
+          1.0
+        ],
+        "strict_round_trip": true,
+        "legacy_reload": true,
+        "partial_checkpoint_rejected": true,
+        "gradient_restricted_to_classifier": true
+      },
+      "candidate": {
+        "xyz_weights_bitwise_unchanged": true,
+        "xyz_predictions_bitwise_unchanged": true,
+        "normalization_unchanged": true,
+        "physical_gripper_commands": [
+          -0.17399999499320984,
+          1.0
+        ],
+        "strict_round_trip": true,
+        "legacy_reload": true,
+        "partial_checkpoint_rejected": true,
+        "gradient_restricted_to_classifier": true
+      }
+    },
+    "flat_legacy_supported": true,
+    "legacy_initialization_rng_unchanged": true
+  },
+  "training_results": {
+    "threshold": {
+      "checkpoint": "checkpoints/multi_cube/ex3_binary_threshold.pt",
+      "epoch": 0,
+      "bce": 0.054710522925647875,
+      "error_rate": 0.018315018315018316,
+      "transition_error_rate": 0.23148148148148148,
+      "label_count": 7644,
+      "transition_label_count": 216
+    },
+    "candidate": {
+      "checkpoint": "checkpoints/multi_cube/ex3_binary_gripper.pt",
+      "epoch": 27,
+      "bce": 0.03423168944913264,
+      "error_rate": 0.01792255363683935,
+      "transition_error_rate": 0.2037037037037037,
+      "label_count": 7644,
+      "transition_label_count": 216
+    }
+  },
+  "results": {
+    "dev": {
+      "baseline": {
+        "episodes": 500,
+        "stable_successes": 495,
+        "failures": {
+          "transport_or_place": 2,
+          "no_lift": 2,
+          "not_released": 1
+        }
+      },
+      "threshold": {
+        "episodes": 500,
+        "stable_successes": 485,
+        "failures": {
+          "transport_or_place": 15
+        }
+      },
+      "candidate": {
+        "episodes": 500,
+        "stable_successes": 460,
+        "failures": {
+          "no_lift": 5,
+          "transport_or_place": 35
+        }
+      }
+    },
+    "hold": {
+      "baseline": {
+        "episodes": 200,
+        "stable_successes": 197,
+        "failures": {
+          "lost_stability_after_success": 1,
+          "transport_or_place": 1,
+          "no_lift": 1
+        }
+      },
+      "threshold": {
+        "episodes": 200,
+        "stable_successes": 192,
+        "failures": {
+          "transport_or_place": 8
+        }
+      },
+      "candidate": {
+        "episodes": 200,
+        "stable_successes": 182,
+        "failures": {
+          "no_lift": 3,
+          "transport_or_place": 15
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "dev_threshold": {
+      "fixed": [
+        163,
+        165,
+        469
+      ],
+      "regressed": [
+        38,
+        51,
+        58,
+        59,
+        75,
+        95,
+        113,
+        190,
+        301,
+        314,
+        333,
+        419,
+        431
+      ],
+      "exact_two_sided_p": 0.021270751953125
+    },
+    "dev_candidate": {
+      "fixed": [
+        163,
+        165
+      ],
+      "regressed": [
+        20,
+        26,
+        38,
+        46,
+        49,
+        51,
+        58,
+        59,
+        75,
+        95,
+        113,
+        115,
+        130,
+        139,
+        161,
+        179,
+        180,
+        190,
+        269,
+        288,
+        314,
+        318,
+        322,
+        333,
+        339,
+        352,
+        362,
+        403,
+        419,
+        427,
+        431,
+        435,
+        444,
+        445,
+        451,
+        461,
+        475
+      ],
+      "exact_two_sided_p": 2.841261448338628e-09
+    },
+    "hold_threshold": {
+      "fixed": [
+        85,
+        163,
+        165
+      ],
+      "regressed": [
+        38,
+        51,
+        58,
+        59,
+        75,
+        95,
+        113,
+        190
+      ],
+      "exact_two_sided_p": 0.2265625
+    },
+    "hold_candidate": {
+      "fixed": [
+        85,
+        163,
+        165
+      ],
+      "regressed": [
+        20,
+        26,
+        38,
+        46,
+        49,
+        51,
+        58,
+        59,
+        75,
+        95,
+        113,
+        115,
+        130,
+        139,
+        161,
+        179,
+        180,
+        190
+      ],
+      "exact_two_sided_p": 0.0014896392822265625
+    }
+  },
+  "confirmation_ran": false,
+  "confirmation_skip_reason": "Both binary variants failed the predeclared development gate.",
+  "official_candidate_successes": 98,
+  "official_candidate_result": "artifacts/ex3/binary_gripper/candidate.hwresult",
+  "decision": "Preserve ex3.pt and ex3_result.hwresult; do not promote either binary checkpoint.",
+  "findings": [
+    "Frozen-feature BCE reduced validation loss but worsened closed-loop success in this configuration.",
+    "Threshold-only control fixed 3 failures and introduced 13 new failures; trained classifier fixed 2 and introduced 37.",
+    "Candidate failures were 5 no-lift and 35 transport-or-place; gripper command changes alter future observations despite unchanged XYZ mapping.",
+    "Hold tests overlap the first 200 development scenes; they are not an independent test set.",
+    "Baseline lost stability after first success in one hold scene (85), reducing 198/200 initial successes to 197/200; both binary variants had no additional post-success losses.",
+    "No claim that binary grippers generally underperform; these endpoints, frozen features and supervised data did not improve this policy."
+  ],
+  "next_investigation": "Investigate control target versus actual hand tracking error and phase-transition failures before changing architecture or adding more data.",
+  "protected_submission_hashes_unchanged": true,
+  "code_sha256": {
+    "hw3/model.py": "c86d9e7be080002b5d3e18e508b9f349f7905ddb207752d06fe710979f6cd1eb",
+    "scripts/train_binary_gripper.py": "fe2a440da4a137ef40151f53c7f3b39a24cf0abd9d1abaf56ed03f0df3c58189",
+    "scripts/verify_binary_gripper.py": "96dfd16f102adbab9e11683568ab5e937c79d23f0270b3eafbc661e05d9e30f0"
+  },
+  "commands": {
+    "train": ".venv/bin/python -u scripts/train_binary_gripper.py --init-checkpoint ex3.pt --output checkpoints/multi_cube/ex3_binary_gripper.pt --control-output checkpoints/multi_cube/ex3_binary_threshold.pt",
+    "verify": ".venv/bin/python scripts/verify_binary_gripper.py --incumbent ex3.pt --control checkpoints/multi_cube/ex3_binary_threshold.pt --candidate checkpoints/multi_cube/ex3_binary_gripper.pt --reference artifacts/ex3/binary_gripper/pre_change_predictions.npz --output artifacts/ex3/binary_gripper/verification.json",
+    "development_template": ".venv/bin/python -u scripts/evaluate_multicube_parallel.py --checkpoint CHECKPOINT --output OUTPUT --seed 20279000 --episodes 500 --workers 4",
+    "hold_template": ".venv/bin/python -u scripts/evaluate_multicube_parallel.py --checkpoint CHECKPOINT --output OUTPUT --seed 20279000 --episodes 200 --workers 4 --post-success-steps 100",
+    "official": ".venv/bin/python -u student_eval/run_eval.py --exercise 3 --checkpoint checkpoints/multi_cube/ex3_binary_gripper.pt --output artifacts/ex3/binary_gripper/candidate.hwresult"
+  }
+}

@@ -270,6 +270,14 @@ def load_and_merge_zarrs(zarr_paths: list[Path]) -> dict[str, np.ndarray]:
     for key, arrays in all_data.items():
         if key == "_dagger_ep_counts":
             continue  # not an array, handled separately
+        if key != "episode_ends" and sum(len(arr) for arr in arrays) != cumulative_offset:
+            if key == "action_mocap_delta":
+                # Older/manual recordings do not contain command increments.
+                # State-delta processing remains usable; command mode rejects
+                # the missing field below instead of silently misaligning labels.
+                print("  Omitting action_mocap_delta: not present in every recording")
+                continue
+            raise ValueError(f"Field {key!r} is missing timesteps in some recordings")
         merged[key] = np.concatenate(arrays, axis=0)
 
     # Propagate dagger episode count as a plain int (not an ndarray)
@@ -300,7 +308,11 @@ def main() -> None:
         default=None,
         help="Output zarr path. Default: datasets/processed/<task>/processed_<action-space>.zarr",
     )
+    parser.add_argument("--ee-action-source", choices=["state-delta", "command"],
+                        default="state-delta", help="Use recorded mocap increments for scripted demonstrations.")
     args = parser.parse_args()
+    if args.ee_action_source == "command" and args.action_space != "ee":
+        parser.error("Recorded command actions require --action-space ee")
 
     # ── discover zarr stores ──────────────────────────────────────────
     zarr_paths = sorted(args.datasets_dir.rglob("*.zarr"))
@@ -340,6 +352,12 @@ def main() -> None:
         f"across {new_ep_ends.size} episodes"
     )
 
+    if args.ee_action_source == "command":
+        commands = merged.get("action_mocap_delta")
+        if commands is None or commands.shape != (n_total, 3):
+            raise ValueError("All input timesteps must contain action_mocap_delta (N, 3)")
+        actions = commands[keep_idx]
+
     # ── align gripper actions (recorded ctrl, not computed) ───────────
     raw_action_gripper = merged.get("action_gripper")
     if raw_action_gripper is not None:
@@ -363,6 +381,7 @@ def main() -> None:
     compressor = zarr.codecs.Blosc(cname="zstd", clevel=3, shuffle=2)
     compressors = (compressor,)
 
+    out_root.attrs["ee_action_source"] = args.ee_action_source
     out_data = out_root.require_group("data")
     out_meta = out_root.require_group("meta")
 

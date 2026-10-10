@@ -1,0 +1,490 @@
+{
+  "status": "complete_candidate_not_promoted",
+  "initial_checkpoint": "ex3.pt",
+  "collection": {
+    "seed": 20282000,
+    "episodes": 216,
+    "episodes_per_cell": 6,
+    "cells": "3 colors x 12 ordered target/bin slot pairs",
+    "selection": "max absolute target/bin XY displacement from assigned nominal slots, in units of default standard deviation",
+    "min_sigma": 2.0,
+    "max_sigma": 3.5,
+    "reset_distribution": "unchanged course defaults",
+    "teacher": "unchanged complete scripted rollout",
+    "success_filter": true
+  },
+  "training": {
+    "epochs": 40,
+    "lr": 3e-05,
+    "seed": 42,
+    "state_noise": 0.01,
+    "new_data_fraction": 0.2,
+    "control_new_data_fraction": 0.0,
+    "normalizer": "frozen original",
+    "validation": "original six held-out episodes",
+    "selection": "lowest held-out action MSE",
+    "same_sampler_draw_count": true
+  },
+  "development": {
+    "seed": 20283000,
+    "episodes": 500,
+    "hold_episodes": 200,
+    "post_success_steps": 100
+  },
+  "confirmation": {
+    "seed": 20284000,
+    "episodes": 5000,
+    "gate": "Tail-data candidate strictly improves incumbent regular development success, is no worse than matched continuation control, and is no worse than both on hold development"
+  },
+  "promotion_rule": "Frozen candidate must improve incumbent on independent paired confirmation with exact two-sided p<0.05 and official score >=99; otherwise keep incumbent.",
+  "limitations": [
+    "No new-unbiased-data arm: comparison measures adding selected data versus continuing on the old data, not whether tail selection beats collecting equally many unbiased new demonstrations."
+  ],
+  "protected_sha256": {
+    "ex1.pt": "c0cff4f34f723126595bdc3784463c043d0d1ecde96fb8eb4196a69a3eea41fc",
+    "ex1_result.hwresult": "e98e54841c597f5a3a0a778d04ada19b3ee89472a7b12d452c3da6498abbbe9f",
+    "ex2.pt": "bbf0f0f25f0891daf3bc97b335a739a944cb48f68a66229a8252632a503da646",
+    "ex2_result.hwresult": "3bf7ad06131aed63a54d38ad5e31f36c13ff44c762d9cf7838340746ee9d445b",
+    "ex3.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+    "ex3_result.hwresult": "c1576ed588e159c914c2e5876acc8795018a4d1e8e014c5c388cdb3c45eae3cd",
+    "hw3/model.py": "c86d9e7be080002b5d3e18e508b9f349f7905ddb207752d06fe710979f6cd1eb",
+    "hw3/eval_utils.py": "1c31eed10e07456bb8243b519e179a42d2bdbb8557ac44ea0a38c4d101f5520d",
+    "hw3/sim_env.py": "661c861a23b9c23595916cf4ebe31afed1a696507a28a189e9a12968edd89174",
+    "student_eval/run_eval.py": "a9332c3bca42743fb6f094f2a5598017d72824ea838997d111e06fe7c46d8c63"
+  },
+  "commands": {
+    "collect": [
+      ".venv/bin/python",
+      "-u",
+      "scripts/collect_multicube_tail_demos.py",
+      "--output-dir",
+      "datasets/raw/multi_cube/scripted/ex3_tail216",
+      "--seed",
+      "20282000",
+      "--episodes-per-cell",
+      "6",
+      "--min-sigma",
+      "2",
+      "--max-sigma",
+      "3.5"
+    ],
+    "train": {
+      "control": [
+        ".venv/bin/python",
+        "-u",
+        "scripts/train.py",
+        "--zarr",
+        "datasets/processed/multi_cube/ex3_initial60.zarr",
+        "--extra-zarr",
+        "datasets/processed/multi_cube/ex3_coverage240.zarr",
+        "datasets/processed/multi_cube/ex3_tail216.zarr",
+        "--policy",
+        "multitask",
+        "--state-keys",
+        "state_ee_xyz",
+        "state_gripper",
+        "state_joints[:5]",
+        "original_pos_cube_red[:3]",
+        "original_pos_cube_green[:3]",
+        "original_pos_cube_blue[:3]",
+        "state_goal",
+        "goal_pos",
+        "--action-keys",
+        "action_ee_xyz",
+        "action_gripper",
+        "--goal-relative",
+        "--init-checkpoint",
+        "ex3.pt",
+        "--epochs",
+        "40",
+        "--lr",
+        "3e-5",
+        "--seed",
+        "42",
+        "--threads",
+        "4",
+        "--state-noise",
+        "0.01",
+        "--new-data-fraction",
+        "0",
+        "--output",
+        "checkpoints/multi_cube/ex3_tail_control.pt"
+      ],
+      "candidate": [
+        ".venv/bin/python",
+        "-u",
+        "scripts/train.py",
+        "--zarr",
+        "datasets/processed/multi_cube/ex3_initial60.zarr",
+        "--extra-zarr",
+        "datasets/processed/multi_cube/ex3_coverage240.zarr",
+        "datasets/processed/multi_cube/ex3_tail216.zarr",
+        "--policy",
+        "multitask",
+        "--state-keys",
+        "state_ee_xyz",
+        "state_gripper",
+        "state_joints[:5]",
+        "original_pos_cube_red[:3]",
+        "original_pos_cube_green[:3]",
+        "original_pos_cube_blue[:3]",
+        "state_goal",
+        "goal_pos",
+        "--action-keys",
+        "action_ee_xyz",
+        "action_gripper",
+        "--goal-relative",
+        "--init-checkpoint",
+        "ex3.pt",
+        "--epochs",
+        "40",
+        "--lr",
+        "3e-5",
+        "--seed",
+        "42",
+        "--threads",
+        "4",
+        "--state-noise",
+        "0.01",
+        "--new-data-fraction",
+        "0.2",
+        "--output",
+        "checkpoints/multi_cube/ex3_tail_candidate.pt"
+      ]
+    },
+    "preprocess": [
+      ".venv/bin/python",
+      "scripts/compute_actions.py",
+      "--action-space",
+      "ee",
+      "--ee-action-source",
+      "command",
+      "--datasets-dir",
+      "datasets/raw/multi_cube/scripted/ex3_tail216",
+      "--output",
+      "datasets/processed/multi_cube/ex3_tail216.zarr"
+    ],
+    "audit": [
+      ".venv/bin/python",
+      "scripts/audit_multicube_demos.py",
+      "--dataset-dir",
+      "datasets/raw/multi_cube/scripted/ex3_tail216",
+      "--output",
+      "artifacts/ex3/tail_coverage/replay_audit.json"
+    ],
+    "development_template": ".venv/bin/python scripts/evaluate_multicube_parallel.py --checkpoint CHECKPOINT --seed 20283000 --episodes 500 --workers 4 --output OUTPUT",
+    "hold_template": ".venv/bin/python scripts/evaluate_multicube_parallel.py --checkpoint CHECKPOINT --seed 20283000 --episodes 200 --workers 4 --post-success-steps 100 --output OUTPUT",
+    "official": [
+      ".venv/bin/python",
+      "student_eval/run_eval.py",
+      "--exercise",
+      "3",
+      "--checkpoint",
+      "checkpoints/multi_cube/ex3_tail_candidate.pt",
+      "--output",
+      "artifacts/ex3/tail_coverage/candidate.hwresult"
+    ]
+  },
+  "original_geometry_summary": {
+    "episodes": 300,
+    "tail_interval_episodes": 49,
+    "tail_interval_fraction": 0.16333333333333333,
+    "above_max_sigma": 0,
+    "score_percentiles": {
+      "0": 0.25601054850332244,
+      "50": 1.4175345597650033,
+      "90": 2.207418620068801,
+      "95": 2.482720247103074,
+      "100": 3.1259254537396726
+    }
+  },
+  "data_verification": {
+    "episodes": 216,
+    "raw_steps": 66703,
+    "processed_transitions": 66487,
+    "colors": {
+      "red": 72,
+      "green": 72,
+      "blue": 72
+    },
+    "cells": 36,
+    "per_cell": 6,
+    "reset_attempts": 2651,
+    "teacher_failures": 0,
+    "exact_command_labels": true,
+    "complete_episode_boundaries": true,
+    "initial_geometry_verified": true,
+    "score_range_sigma": [
+      2.0033041636149016,
+      3.448454538981118
+    ],
+    "sampling_boundary": 92329,
+    "total_episodes_with_original": 516
+  },
+  "audit": {
+    "episodes": 216,
+    "stable_release_successes": 216,
+    "max_ee_error_m": 0.000232542420668308
+  },
+  "training_verification": {
+    "control": {
+      "checkpoint": "checkpoints/multi_cube/ex3_tail_control.pt",
+      "epoch": 40,
+      "val_loss": 0.05865280291193259,
+      "initial_val_loss": 0.06128887952247382,
+      "new_data_fraction": 0.0,
+      "epochs_run": 40,
+      "sampling_boundary": 92329,
+      "train_draws_per_epoch": 155357,
+      "optimizer_steps_per_epoch": 304,
+      "normalization_unchanged": true,
+      "validation_unchanged": true,
+      "architecture_unchanged": true,
+      "binary_gripper_disabled": true,
+      "finite_predictions": true
+    },
+    "candidate": {
+      "checkpoint": "checkpoints/multi_cube/ex3_tail_candidate.pt",
+      "epoch": 38,
+      "val_loss": 0.05922434367687836,
+      "initial_val_loss": 0.06128887952247382,
+      "new_data_fraction": 0.2,
+      "epochs_run": 40,
+      "sampling_boundary": 92329,
+      "train_draws_per_epoch": 155357,
+      "optimizer_steps_per_epoch": 304,
+      "normalization_unchanged": true,
+      "validation_unchanged": true,
+      "architecture_unchanged": true,
+      "binary_gripper_disabled": true,
+      "finite_predictions": true
+    }
+  },
+  "results": {
+    "dev": {
+      "baseline": {
+        "episodes": 500,
+        "stable_successes": 496,
+        "failures": {
+          "not_released": 2,
+          "no_lift": 1,
+          "transport_or_place": 1
+        }
+      },
+      "control": {
+        "episodes": 500,
+        "stable_successes": 493,
+        "failures": {
+          "transport_or_place": 1,
+          "not_released": 4,
+          "no_lift": 2
+        }
+      },
+      "candidate": {
+        "episodes": 500,
+        "stable_successes": 496,
+        "failures": {
+          "no_lift": 2,
+          "transport_or_place": 1,
+          "not_released": 1
+        }
+      }
+    },
+    "hold": {
+      "baseline": {
+        "episodes": 200,
+        "stable_successes": 199,
+        "failures": {
+          "not_released": 1
+        }
+      },
+      "control": {
+        "episodes": 200,
+        "stable_successes": 197,
+        "failures": {
+          "transport_or_place": 1,
+          "not_released": 2
+        }
+      },
+      "candidate": {
+        "episodes": 200,
+        "stable_successes": 198,
+        "failures": {
+          "no_lift": 1,
+          "lost_stability_after_success": 1
+        }
+      }
+    }
+  },
+  "paired_comparisons": {
+    "dev_control": {
+      "fixed": [
+        255
+      ],
+      "regressed": [
+        119,
+        128,
+        360,
+        476
+      ],
+      "exact_two_sided_p": 0.375
+    },
+    "dev_candidate": {
+      "fixed": [
+        197,
+        255,
+        342
+      ],
+      "regressed": [
+        48,
+        436,
+        488
+      ],
+      "exact_two_sided_p": 1.0
+    },
+    "hold_control": {
+      "fixed": [],
+      "regressed": [
+        119,
+        128
+      ],
+      "exact_two_sided_p": 0.5
+    },
+    "hold_candidate": {
+      "fixed": [
+        197
+      ],
+      "regressed": [
+        48,
+        113
+      ],
+      "exact_two_sided_p": 1.0
+    }
+  },
+  "post_success_violations": {
+    "baseline": [],
+    "control": [],
+    "candidate": [
+      113
+    ]
+  },
+  "geometry_analysis": {
+    "seed": 20283000,
+    "strata": {
+      "baseline": {
+        "tail_2_to_3p5": {
+          "episodes": 87,
+          "successes": 83
+        },
+        "below_2": {
+          "episodes": 411,
+          "successes": 411
+        },
+        "above_3p5": {
+          "episodes": 2,
+          "successes": 2
+        }
+      },
+      "control": {
+        "tail_2_to_3p5": {
+          "episodes": 87,
+          "successes": 83
+        },
+        "below_2": {
+          "episodes": 411,
+          "successes": 408
+        },
+        "above_3p5": {
+          "episodes": 2,
+          "successes": 2
+        }
+      },
+      "candidate": {
+        "tail_2_to_3p5": {
+          "episodes": 87,
+          "successes": 86
+        },
+        "below_2": {
+          "episodes": 411,
+          "successes": 408
+        },
+        "above_3p5": {
+          "episodes": 2,
+          "successes": 2
+        }
+      }
+    },
+    "paired": {
+      "baseline": {
+        "fixed": [],
+        "regressed": [],
+        "failure_scores_sigma": {
+          "197": 2.4283210025865114,
+          "255": 2.000660556865333,
+          "342": 2.319270140680415,
+          "405": 2.208981882162809
+        }
+      },
+      "control": {
+        "fixed": [
+          255
+        ],
+        "regressed": [
+          119,
+          128,
+          360,
+          476
+        ],
+        "failure_scores_sigma": {
+          "119": 1.6155713040891806,
+          "128": 1.9053277998174514,
+          "197": 2.4283210025865114,
+          "342": 2.319270140680415,
+          "360": 0.7560586182008833,
+          "405": 2.208981882162809,
+          "476": 2.328089527442031
+        }
+      },
+      "candidate": {
+        "fixed": [
+          197,
+          255,
+          342
+        ],
+        "regressed": [
+          48,
+          436,
+          488
+        ],
+        "failure_scores_sigma": {
+          "48": 0.9643463552674498,
+          "405": 2.208981882162809,
+          "436": 0.53294345847719,
+          "488": 1.762414965466308
+        }
+      }
+    }
+  },
+  "official_candidate_successes": 98,
+  "official_candidate_result": "artifacts/ex3/tail_coverage/candidate.hwresult",
+  "confirmation_ran": false,
+  "confirmation_skip_reason": "Candidate tied rather than improved incumbent on development500, underperformed incumbent on hold200, and official98 failed the >=99 promotion requirement.",
+  "decision": "Keep existing ex3.pt and ex3_result.hwresult. Retain the 216 audited demonstrations and experimental checkpoints for later experiments.",
+  "findings": [
+    "Collected216 complete demonstrations from2651 default resets; all36 color/target-slot/bin-slot cells have6 episodes. No expert failures among216 executed demonstrations.",
+    "All216 physical action replays succeeded; maximum measured hand-position deviation was0.0002325424m.",
+    "Both models used40 planned epochs and155357 replacement draws per epoch with the same frozen normalization/validation split. Candidate sampled20% new data; continuation control0%.",
+    "Development500: incumbent496, continuation493, candidate496. Candidate fixed3 original failures and introduced3 new failures.",
+    "Within the pre-defined2-to3.5-sigma stratum, candidate improved83/87 to86/87; below2sigma, incumbent411/411 became408/411. Both above3.5sigma cases succeeded for all models.",
+    "This single development sample shows a useful hard-scene benefit offset by regressions; it does not establish population improvement.",
+    "Hold200 overlaps the first200 development scenes: incumbent199, continuation197, candidate198. Candidate lost stability after initial success in one additional scene.",
+    "Lower validation action MSE did not ensure improved closed-loop success. Continued optimization on only old data also introduced regressions."
+  ],
+  "next_experiment": "Test a frozen-incumbent action-prediction regularizer on ordinary/successful states while learning the new hard demonstrations; measure whether it preserves ordinary trajectories without losing hard-scene gains.",
+  "protected_files_unchanged": true,
+  "collector_sha256": "940c6b210ee284082279a0d504c4206439715a82e8fe9d43253e374f8277ac1f",
+  "checkpoint_sha256": {
+    "control": "2416cb54ca0046829ec633a534c6fdcc3a6c3538556eb33640203b5154da0047",
+    "candidate": "8cca917429e7cde0265d3f2532b5a51cbd2000b41186a123c0a14907a3bcfeb0"
+  }
+}

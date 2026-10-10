@@ -1,0 +1,30 @@
+{
+  "status": "diagnosis_complete_no_policy_change",
+  "checkpoint_sha256": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+  "inspection_seed": 20275000,
+  "classification": {
+    "730": "In bin but still in contact with both jaws; large accumulated target/hand mismatch",
+    "763": "Missed grasp; cube stays on table",
+    "838": "In bin, last 100 steps only bin contact and hand separated; strict flag caused by closed gripper",
+    "874": "Cube only contacts bin but hand remains close; control target drifts far below table"
+  },
+  "conclusions": [
+    "The prior not_released label merges physically different cases.",
+    "Our fixed strict metric includes gripper-open and hand-separation requirements beyond merely dropping the cube. Keep it for comparable historical scores; add contact-based diagnostics rather than retrospectively raising scores.",
+    "Learned xyz deltas accumulate into a hidden mocap target; current state contains actual hand pose, not the target. Large target drift is observed, but causal mechanism requires further intervention experiments.",
+    "All 300-demo gripper command labels are exactly -0.174 or 1.0; deployed MSE regression can produce intermediate and extrapolated values. A binary head is a reasonable ablation, not a guaranteed fix."
+  ],
+  "priority": [
+    "Collect a small amount of consistent open-retreat-hold terminal behavior with nearby pose variations on separate development scenes; retain most original data and check regressions.",
+    "Test a separately trained binary gripper head while keeping xyz behavior protected; compare against current continuous head.",
+    "Investigate action bounds and observability of accumulated target lag without modifying the official harness; step clipping alone cannot eliminate accumulated drift."
+  ],
+  "evaluation": "At a 0.4% observed strict failure rate, use larger fresh paired tests for final confirmation; do not optimize only these four inspected cases.",
+  "sources": {
+    "course_drop_requirement": "README.md:105",
+    "control_accumulation": "hw3/eval_utils.py:228",
+    "loss": "hw3/model.py:51",
+    "gripper_loss_reference": "https://arxiv.org/html/2202.02005v1#S5.SS2"
+  },
+  "policy_unchanged": true
+}

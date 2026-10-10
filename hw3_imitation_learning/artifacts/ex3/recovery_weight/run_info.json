@@ -1,0 +1,170 @@
+{
+  "status": "complete_10percent_rejected_0percent_candidate_saved",
+  "baseline_checkpoint": "ex3.pt",
+  "baseline_sha256": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+  "candidate_checkpoint": "checkpoints/multi_cube/ex3_recovery_weight10.pt",
+  "intervention": "Expected recovery sampling fraction 10%, weighted sampling with replacement",
+  "previous_natural_training_fraction": 0.38268818417785805,
+  "training": {
+    "lr": 3e-05,
+    "epochs": 40,
+    "seed": 42,
+    "init_checkpoint": "checkpoints/multi_cube/ex3_relative60.pt",
+    "original_episodes": 60,
+    "recovery_episodes": 33,
+    "extra_data_fraction": 0.1,
+    "validation_episodes": [
+      28,
+      55,
+      18,
+      24,
+      7,
+      17
+    ],
+    "normalization": "frozen",
+    "selection": "best original held-out episode MSE",
+    "selected_epoch": 17,
+    "val_loss": 0.06485353131675707,
+    "initial_val_loss": 0.0649935785585489,
+    "normalization_verified_unchanged": true,
+    "sampler_test": "10.263% recovery over 9,997 draws with requested 10%; action chunks remain aligned"
+  },
+  "evaluation": {
+    "seed": 20269000,
+    "episodes": 500,
+    "used_for_training": false,
+    "used_for_epoch_selection": false,
+    "baseline_successes": 487,
+    "candidate_successes": 444,
+    "candidate_failures": {
+      "no_lift": 48,
+      "transport_or_place": 7,
+      "not_released": 1
+    },
+    "candidate": {
+      "successes": 444,
+      "failures": {
+        "no_lift": 48,
+        "transport_or_place": 7,
+        "not_released": 1
+      },
+      "improved_scene_indices": [
+        77,
+        345,
+        412,
+        417
+      ],
+      "regressed_scene_indices": [
+        21,
+        52,
+        56,
+        58,
+        78,
+        98,
+        99,
+        103,
+        109,
+        113,
+        117,
+        149,
+        150,
+        152,
+        156,
+        158,
+        168,
+        176,
+        177,
+        179,
+        186,
+        214,
+        218,
+        224,
+        236,
+        240,
+        247,
+        251,
+        275,
+        277,
+        294,
+        299,
+        311,
+        314,
+        317,
+        321,
+        328,
+        339,
+        368,
+        375,
+        403,
+        408,
+        425,
+        427,
+        441,
+        452,
+        483
+      ]
+    },
+    "control": {
+      "successes": 489,
+      "failures": {
+        "transport_or_place": 9,
+        "no_lift": 1,
+        "not_released": 1
+      },
+      "improved_scene_indices": [
+        290,
+        343,
+        345,
+        376,
+        412,
+        417,
+        465,
+        488
+      ],
+      "regressed_scene_indices": [
+        117,
+        181,
+        251,
+        275,
+        428,
+        483
+      ]
+    }
+  },
+  "limitations": [
+    "Sampling is now with replacement, unlike the previous uniform shuffled epoch; this is not a perfectly isolated loss-weight ablation.",
+    "Nearest-neighbor gripper disagreement is a diagnostic and does not establish causality."
+  ],
+  "control": {
+    "checkpoint": "checkpoints/multi_cube/ex3_recovery_weight0.pt",
+    "recovery_fraction": 0,
+    "epochs": 40,
+    "lr": 3e-05,
+    "seed": 42,
+    "sampling": "Same weighted replacement sampler, same total draws and update count as 10% candidate; zero probability for recovery samples",
+    "purpose": "Separate continued-training effects from recovery-data contribution",
+    "selected_epoch": 21,
+    "val_loss": 0.06415390678058115,
+    "normalization_verified_unchanged": true,
+    "zero_sampling_verified": true
+  },
+  "official": {
+    "seed": 42,
+    "episodes": 100,
+    "baseline_successes": 98,
+    "recovery10_successes": 88,
+    "recovery0_successes": 99,
+    "harness_modified": false
+  },
+  "decision": "Reject 10% recovery model. Preserve 0% continued-training candidate separately (99/100 official; 489/500 fresh strict versus baseline 487/500). Keep incumbent submission unchanged pending larger independent confirmation.",
+  "findings": [
+    "Nearby-state gripper disagreement exists in both base and recovery demonstrations; not established as sole cause.",
+    "Under matched replacement sampling and update budgets, the selected 0% recovery model strongly outperforms the selected 10% model in this experiment.",
+    "Lower held-out action MSE did not guarantee higher rollout success.",
+    "0% candidate improvement over incumbent is small; one training seed and one fresh test set do not establish robust superiority."
+  ],
+  "next_step": "Confirm the 0% continued-training candidate on larger new paired evaluation before promoting; redesign/filter recovery demonstrations before further mixing.",
+  "candidate_sha256": "d0ccabc3b6b773a3fd25d1b5ec501a47020e944c1ed2bbf91963b2f8d199a363",
+  "control_sha256": "e6ab1be6b19ecdcfe0fe5b95947a8c5bd524e4c281c60d29eaf9d62feb014ba5",
+  "submission_integrity_verified": true
+}

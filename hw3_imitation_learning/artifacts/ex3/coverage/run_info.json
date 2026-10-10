@@ -1,0 +1,251 @@
+{
+  "status": "complete_promoted",
+  "new_episodes": 240,
+  "total_episodes": 300,
+  "collection_seed": 20273000,
+  "source": "Ordinary successful scripted physical demonstrations; no recovery suffixes",
+  "development": {
+    "seed": 20274000,
+    "episodes": 200,
+    "selection": "Higher strict success; prefer warm if tied"
+  },
+  "confirmation": {
+    "seed": 20275000,
+    "episodes": 1000,
+    "used_for_selection": false
+  },
+  "promotion_rule": "Selected model strictly beats incumbent with exact paired two-sided p<0.05, is not worse than the saved 99-point reference on confirmation, and official score >=99",
+  "variants": {
+    "warm": {
+      "initial": "checkpoints/multi_cube/ex3_relative60.pt",
+      "epochs": 40,
+      "lr": 3e-05,
+      "validation": "original fixed six episodes",
+      "normalizer": "frozen"
+    },
+    "scratch": {
+      "initial": null,
+      "epochs": 100,
+      "lr": 0.001,
+      "validation": "30 held-out episodes selected by seed42",
+      "normalizer": "fit on training split"
+    }
+  },
+  "limitations": [
+    "Variants differ in initialization, normalization and validation split; this is practical model selection, not an isolated causal test."
+  ],
+  "hashes": {
+    "ex3.pt": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+    "ex3_result.hwresult": "49fd465564f721bb75de88cd0c70cde3e993ce3615f8a823c2f759424807a96a",
+    "checkpoints/multi_cube/ex3_recovery_weight0.pt": "e6ab1be6b19ecdcfe0fe5b95947a8c5bd524e4c281c60d29eaf9d62feb014ba5"
+  },
+  "selection": {
+    "scores": {
+      "warm": 200,
+      "scratch": 192
+    },
+    "selected": "warm",
+    "checkpoint": "checkpoints/multi_cube/ex3_coverage300_warm.pt"
+  },
+  "training_results": {
+    "warm": {
+      "epoch": 38,
+      "val_loss": 0.06128887952247382,
+      "validation_episodes": [
+        28,
+        55,
+        18,
+        24,
+        7,
+        17
+      ],
+      "data_paths": [
+        "datasets/processed/multi_cube/ex3_initial60.zarr",
+        "datasets/processed/multi_cube/ex3_coverage240.zarr"
+      ],
+      "learning_rate": 3e-05,
+      "chunk_size": 4,
+      "goal_relative": true
+    },
+    "scratch": {
+      "epoch": 62,
+      "val_loss": 0.05711770626315316,
+      "validation_episodes": [
+        261,
+        293,
+        61,
+        253,
+        166,
+        26,
+        127,
+        284,
+        19,
+        254,
+        191,
+        290,
+        214,
+        46,
+        296,
+        193,
+        77,
+        51,
+        98,
+        184,
+        235,
+        297,
+        234,
+        273,
+        271,
+        281,
+        0,
+        64,
+        201,
+        92
+      ],
+      "data_paths": [
+        "datasets/processed/multi_cube/ex3_initial60.zarr",
+        "datasets/processed/multi_cube/ex3_coverage240.zarr"
+      ],
+      "learning_rate": 0.001,
+      "chunk_size": 4,
+      "goal_relative": true
+    }
+  },
+  "audit": {
+    "episodes": 240,
+    "stable_release_successes": 240,
+    "max_ee_error_m": 7.064989401839306e-08,
+    "results": "See audit.json for per-episode replay checks"
+  },
+  "confirmation_results": {
+    "incumbent1000": {
+      "episodes": 1000,
+      "stable_successes": 968,
+      "failures": {
+        "transport_or_place": 21,
+        "no_lift": 8,
+        "not_released": 3
+      }
+    },
+    "reference99_1000": {
+      "episodes": 1000,
+      "stable_successes": 976,
+      "failures": {
+        "transport_or_place": 14,
+        "no_lift": 7,
+        "not_released": 3
+      }
+    },
+    "candidate1000": {
+      "episodes": 1000,
+      "stable_successes": 996,
+      "failures": {
+        "not_released": 3,
+        "no_lift": 1
+      }
+    }
+  },
+  "comparisons": {
+    "incumbent1000": {
+      "baseline_successes": 968,
+      "candidate_successes": 996,
+      "improved": [
+        7,
+        9,
+        50,
+        53,
+        102,
+        180,
+        201,
+        233,
+        273,
+        286,
+        316,
+        342,
+        392,
+        409,
+        434,
+        455,
+        477,
+        487,
+        500,
+        517,
+        545,
+        602,
+        643,
+        655,
+        668,
+        739,
+        784,
+        835,
+        884,
+        914,
+        950,
+        983
+      ],
+      "regressed": [
+        730,
+        763,
+        838,
+        874
+      ],
+      "exact_two_sided_mcnemar_p": 1.941574737429619e-06,
+      "paired_bootstrap_95percent_difference_percentage_points": [
+        1.7,
+        4.0
+      ]
+    },
+    "reference99_1000": {
+      "baseline_successes": 976,
+      "candidate_successes": 996,
+      "improved": [
+        7,
+        50,
+        180,
+        281,
+        286,
+        342,
+        363,
+        378,
+        393,
+        423,
+        434,
+        437,
+        455,
+        532,
+        545,
+        602,
+        655,
+        739,
+        846,
+        885,
+        914,
+        940
+      ],
+      "regressed": [
+        763,
+        838
+      ],
+      "exact_two_sided_mcnemar_p": 3.5881996154785156e-05,
+      "paired_bootstrap_95percent_difference_percentage_points": [
+        1.1,
+        3.0
+      ]
+    }
+  },
+  "official_successes": 99,
+  "official_episodes": 100,
+  "promotion_supported": true,
+  "selected_checkpoint_sha256": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+  "integrity_verified": true,
+  "decision": "Promoted coverage300 warm-start model to ex3.pt and its signed official99 result to ex3_result.hwresult after independent confirmation passed the predefined rule.",
+  "backups": {
+    "ex3.pt": "artifacts/ex3/coverage/previous_ex3.pt",
+    "ex3_result.hwresult": "artifacts/ex3/coverage/previous_ex3_result.hwresult"
+  },
+  "current_submission_sha256": {
+    "ex3.pt": "06b984695d76d65487fee4982c187430470a4bd028d45385c43d33064b54ea85",
+    "ex3_result.hwresult": "c1576ed588e159c914c2e5876acc8795018a4d1e8e014c5c388cdb3c45eae3cd"
+  },
+  "next_focus": "Remaining independent strict failures: three release failures and one no-lift. Do not claim guaranteed 100% reliability."
+}

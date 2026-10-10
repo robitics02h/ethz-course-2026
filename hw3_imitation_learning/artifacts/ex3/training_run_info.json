@@ -1,0 +1,86 @@
+{
+  "checkpoint": "ex3.pt",
+  "sha256": "973d35fe281c87603379a224b3d28ab0d6da2ce135fbbaa037aa442bba7419e1",
+  "training_episodes": 54,
+  "validation_episodes": [
+    28,
+    55,
+    18,
+    24,
+    7,
+    17
+  ],
+  "total_episodes": 60,
+  "epochs_run": 100,
+  "selected_epoch": 33,
+  "validation_loss": 0.24798846946593545,
+  "state_keys": [
+    "state_ee_xyz",
+    "state_gripper",
+    "state_joints[:5]",
+    "original_pos_cube_red[:3]",
+    "original_pos_cube_green[:3]",
+    "original_pos_cube_blue[:3]",
+    "state_goal",
+    "goal_pos"
+  ],
+  "action_keys": [
+    "action_ee_xyz",
+    "action_gripper"
+  ],
+  "state_dim": 24,
+  "action_dim": 4,
+  "chunk_size": 4,
+  "d_model": 512,
+  "depth": 3,
+  "seed": 42,
+  "data_paths": [
+    "datasets/processed/multi_cube/ex3_initial60.zarr"
+  ],
+  "ee_action_source": "command",
+  "selection": "lowest held-out episode action loss; no rollout-based checkpoint selection",
+  "training_command": "bash scripts/train_ex3_baseline.sh datasets/processed/multi_cube/ex3_initial60.zarr checkpoints/multi_cube/ex3_initial60.pt 100",
+  "holdout": {
+    "seed": 20262030,
+    "episodes": 30,
+    "successes": 3,
+    "by_color": {
+      "red": [
+        2,
+        10
+      ],
+      "green": [
+        0,
+        10
+      ],
+      "blue": [
+        1,
+        10
+      ]
+    },
+    "criterion": "course scripts/eval.py bin-entry test; not an additional stable-release audit"
+  },
+  "official": {
+    "seed": 42,
+    "episodes": 100,
+    "successes": 15,
+    "score": 15,
+    "by_color": {
+      "red": [
+        5,
+        34
+      ],
+      "green": [
+        5,
+        33
+      ],
+      "blue": [
+        5,
+        33
+      ]
+    },
+    "result": "ex3_result.hwresult",
+    "harness_modified": false,
+    "numerical_instability_warning": true
+  }
+}

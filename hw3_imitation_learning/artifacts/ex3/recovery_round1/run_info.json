@@ -1,0 +1,110 @@
+{
+  "status": "complete_candidate_rejected_baseline_retained",
+  "baseline_checkpoint": "checkpoints/multi_cube/ex3_relative60.pt",
+  "baseline_sha256": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+  "scan": {
+    "seed": 20264000,
+    "episodes": 180,
+    "stable_successes": 174,
+    "failure_counts": {
+      "no_lift": 1,
+      "transport_or_place": 5
+    },
+    "role": "Development and correction-data collection; not independent final evaluation"
+  },
+  "corrections": {
+    "episodes": 6,
+    "raw_steps": 1334,
+    "transitions": 1328,
+    "prefix_steps": [
+      180,
+      180,
+      180,
+      180,
+      140,
+      180
+    ],
+    "one_correction_per_scene": true,
+    "reset_between_prefix_and_takeover": false,
+    "all_replayed_successfully": true,
+    "source": "automated scripted expert"
+  },
+  "paired_holdout": {
+    "seed": 20265000,
+    "episodes": 180,
+    "used_for_training": false,
+    "baseline_stable_successes": 170,
+    "candidate_stable_successes": 160,
+    "candidate_failure_counts": {
+      "no_lift": 1,
+      "not_released": 1,
+      "transport_or_place": 18
+    },
+    "improved_scene_indices": [
+      56,
+      140
+    ],
+    "regressed_scene_indices": [
+      22,
+      36,
+      52,
+      60,
+      91,
+      125,
+      126,
+      130,
+      141,
+      147,
+      168,
+      174
+    ]
+  },
+  "candidate_checkpoint": "checkpoints/multi_cube/ex3_recovery66.pt",
+  "training": {
+    "original_episodes": 60,
+    "correction_episodes": 6,
+    "epochs": 100,
+    "same_architecture_and_goal_relative_features": true,
+    "initialization": "from scratch",
+    "split": "whole episodes, 10% held out",
+    "note": "Adding episodes changes the random validation episode selection; validation MSE is not directly comparable across these two runs.",
+    "selected_epoch": 95,
+    "validation_loss": 0.07007433672089829,
+    "validation_episodes": [
+      50,
+      29,
+      44,
+      21,
+      58,
+      17,
+      7
+    ]
+  },
+  "development": {
+    "seed": 4000,
+    "episodes": 30,
+    "baseline_successes": 29,
+    "candidate_successes": 29
+  },
+  "targeted_cases": {
+    "episodes": 6,
+    "baseline_successes": 0,
+    "candidate_successes": 4,
+    "interpretation": "Correction-data source scenes, not an independent generalization test"
+  },
+  "official": {
+    "baseline_successes": 98,
+    "candidate_successes": 90,
+    "episodes": 100,
+    "harness_modified": false
+  },
+  "decision": "Keep ex3.pt and ex3_result.hwresult unchanged: local recovery improvement did not transfer to better overall performance.",
+  "interpretation": "This run changed data and the random episode validation split together; it does not isolate whether the regression is caused by correction labels, sampling balance, initialization, or checkpoint selection.",
+  "commands": {
+    "scan": ".venv/bin/python scripts/diagnose_multicube_policy.py --checkpoint checkpoints/multi_cube/ex3_relative60.pt --seed 20264000 --episodes 180 --output artifacts/ex3/recovery_round1/baseline_scan180.json",
+    "collect": ".venv/bin/python scripts/collect_multicube_corrections.py --checkpoint checkpoints/multi_cube/ex3_relative60.pt --scan artifacts/ex3/recovery_round1/baseline_scan180.json --output-dir datasets/raw/multi_cube/dagger/ex3_recovery_round1",
+    "preprocess": ".venv/bin/python scripts/compute_actions.py --action-space ee --ee-action-source command --datasets-dir datasets/raw/multi_cube/dagger/ex3_recovery_round1 --output datasets/processed/multi_cube/ex3_recovery_round1.zarr",
+    "audit": ".venv/bin/python scripts/audit_multicube_demos.py --dataset-dir datasets/raw/multi_cube/dagger/ex3_recovery_round1 --output artifacts/ex3/recovery_round1/replay_audit.json",
+    "train": ".venv/bin/python scripts/train.py --policy multitask --goal-relative --zarr datasets/processed/multi_cube/ex3_initial60.zarr --extra-zarr datasets/processed/multi_cube/ex3_recovery_round1.zarr --state-keys state_ee_xyz state_gripper \"state_joints[:5]\" \"original_pos_cube_red[:3]\" \"original_pos_cube_green[:3]\" \"original_pos_cube_blue[:3]\" state_goal goal_pos --action-keys action_ee_xyz action_gripper --chunk-size 4 --d-model 512 --depth 3 --threads 2 --epochs 100 --output checkpoints/multi_cube/ex3_recovery66.pt"
+  }
+}

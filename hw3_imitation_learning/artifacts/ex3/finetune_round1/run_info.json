@@ -1,0 +1,108 @@
+{
+  "status": "complete_candidate_saved_incumbent_retained",
+  "checkpoint": "checkpoints/multi_cube/ex3_finetune66.pt",
+  "sha256": "ae8c87b03bdf9625e7819c78b9b13cac71cfbbd5b905dfcee48299e52be9118e",
+  "initial_checkpoint": "checkpoints/multi_cube/ex3_relative60.pt",
+  "initial_sha256": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+  "data_paths": [
+    "datasets/processed/multi_cube/ex3_initial60.zarr",
+    "datasets/processed/multi_cube/ex3_recovery_round1.zarr"
+  ],
+  "training": {
+    "original_episodes": 60,
+    "correction_episodes": 6,
+    "original_training_episodes": 54,
+    "fixed_validation_episodes": [
+      28,
+      55,
+      18,
+      24,
+      7,
+      17
+    ],
+    "learning_rate": 3e-05,
+    "epochs_run": 40,
+    "selected_epoch": 1,
+    "initial_val_loss": 0.0649935785585489,
+    "selected_val_loss": 0.06462654191854424,
+    "normalization": "frozen from initial checkpoint",
+    "optimizer": "new AdamW; no inherited optimizer momentum",
+    "selection": "lowest MSE on the original fixed six validation episodes; no rollout-based checkpoint selection"
+  },
+  "development": {
+    "seed": 4000,
+    "episodes": 30,
+    "baseline_stable_successes": 29,
+    "candidate_stable_successes": 29
+  },
+  "training_source_scenes": {
+    "seed": 20264000,
+    "scene_indices": [
+      4,
+      13,
+      30,
+      37,
+      73,
+      155
+    ],
+    "baseline_stable_successes": 0,
+    "candidate_stable_successes": 4,
+    "not_an_independent_test": true
+  },
+  "paired_holdout": {
+    "seed": 20266000,
+    "episodes": 180,
+    "used_for_training_or_epoch_selection": false,
+    "baseline_stable_successes": 174,
+    "candidate_stable_successes": 176,
+    "improved_scene_indices": [
+      57,
+      127,
+      146,
+      166
+    ],
+    "regressed_scene_indices": [
+      163,
+      172
+    ],
+    "baseline_failures": {
+      "no_lift": 2,
+      "not_released": 2,
+      "transport_or_place": 2
+    },
+    "candidate_failures": {
+      "not_released": 1,
+      "transport_or_place": 3
+    }
+  },
+  "checks": [
+    "unchanged validation episode IDs",
+    "bitwise identical normalization and feature buffers",
+    "initial validation loss reproduces original checkpoint within 1e-6"
+  ],
+  "train_command": ".venv/bin/python scripts/train.py --policy multitask --goal-relative --init-checkpoint checkpoints/multi_cube/ex3_relative60.pt --zarr datasets/processed/multi_cube/ex3_initial60.zarr --extra-zarr datasets/processed/multi_cube/ex3_recovery_round1.zarr --state-keys state_ee_xyz state_gripper \"state_joints[:5]\" \"original_pos_cube_red[:3]\" \"original_pos_cube_green[:3]\" \"original_pos_cube_blue[:3]\" state_goal goal_pos --action-keys action_ee_xyz action_gripper --chunk-size 4 --d-model 512 --depth 3 --threads 2 --epochs 40 --lr 0.00003 --output checkpoints/multi_cube/ex3_finetune66.pt",
+  "official": {
+    "seed": 42,
+    "episodes": 100,
+    "baseline_successes": 98,
+    "candidate_successes": 98,
+    "candidate_score": 98,
+    "by_color": {
+      "red": [
+        34,
+        34
+      ],
+      "green": [
+        32,
+        33
+      ],
+      "blue": [
+        32,
+        33
+      ]
+    },
+    "harness_modified": false
+  },
+  "decision": "Retain current ex3.pt and ex3_result.hwresult; preserve fine-tuned candidate separately. Two net extra successes out of 180 with two new regressions are not enough to claim a robust overall advantage.",
+  "limits": "One training seed and one fresh paired evaluation set. No confidence or universal reliability claim. Six correction-source cases are training scenes, not independent tests."
+}

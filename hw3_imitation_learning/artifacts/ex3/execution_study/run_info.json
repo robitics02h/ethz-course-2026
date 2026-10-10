@@ -1,0 +1,127 @@
+{
+  "checkpoint": "ex3.pt",
+  "checkpoint_sha256": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+  "execution_comparison": [
+    {
+      "checkpoint": "ex3.pt",
+      "seed": 4000,
+      "execute_steps": 4,
+      "episodes": 60,
+      "stable_successes": 59,
+      "bin_entries": 59,
+      "failures": {
+        "no_lift": 1
+      }
+    },
+    {
+      "checkpoint": "ex3.pt",
+      "seed": 4000,
+      "execute_steps": 2,
+      "episodes": 60,
+      "stable_successes": 5,
+      "bin_entries": 9,
+      "failures": {
+        "no_lift": 2,
+        "not_released": 4,
+        "transport_or_place": 49
+      }
+    },
+    {
+      "checkpoint": "ex3.pt",
+      "seed": 4000,
+      "execute_steps": 1,
+      "episodes": 60,
+      "stable_successes": 7,
+      "bin_entries": 9,
+      "failures": {
+        "no_lift": 17,
+        "not_released": 2,
+        "transport_or_place": 33,
+        "wrong_cube_lift": 1
+      }
+    }
+  ],
+  "comparison_scope": "Same H=4 trained checkpoint; execute only first H actions then replan. Does not evaluate separately trained H=1/H=2 models. Seed 4000 is development data.",
+  "failure_trace_summary": [
+    {
+      "scene": 127,
+      "color": "green",
+      "final_ee_target_lag_m": 0.09273883864952677,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 1.1833801408180054,
+      "final_cube": [
+        -0.2183365176522949,
+        0.4456844079022831,
+        0.02711834388825802
+      ]
+    },
+    {
+      "scene": 146,
+      "color": "blue",
+      "final_ee_target_lag_m": 0.19140473307714703,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 0.9729312173483601,
+      "final_cube": [
+        -0.2022883232025923,
+        0.34662849977444843,
+        0.026281177064302927
+      ]
+    },
+    {
+      "scene": 166,
+      "color": "green",
+      "final_ee_target_lag_m": 0.17195475094839882,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 0.3150593619497573,
+      "final_cube": [
+        -0.1549238202469527,
+        0.21442918066605052,
+        0.16123945196337683
+      ]
+    },
+    {
+      "scene": 33,
+      "color": "red",
+      "final_ee_target_lag_m": 0.34328915164251034,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 0.33271641118177264,
+      "final_cube": [
+        -0.1568108288425727,
+        0.1730520233968338,
+        0.23177919652812842
+      ]
+    },
+    {
+      "scene": 56,
+      "color": "blue",
+      "final_ee_target_lag_m": 0.024017080086060717,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 0.3538783433064544,
+      "final_cube": [
+        -0.19910533222028987,
+        0.7075581970910478,
+        0.02211604477142409
+      ]
+    },
+    {
+      "scene": 57,
+      "color": "red",
+      "final_ee_target_lag_m": 0.021761243852770607,
+      "max_other_cube_displacement_m": 2.6359362193667524e-06,
+      "final_gripper": 0.0811832266943653,
+      "final_cube": [
+        -0.2095564200268151,
+        0.6987828543513904,
+        0.034117549789112855
+      ]
+    }
+  ],
+  "findings": [
+    "Keep execution length 4; truncation strongly degrades this checkpoint.",
+    "Six incumbent failures at seed 20266000: two no-lift, two transport/place, two fail strict release criterion.",
+    "Other cubes show negligible displacement in these six failures; this does not rule out all contacts.",
+    "Large commanded-target versus actual-hand lag is present at the end of some failures; causal direction is not established."
+  ],
+  "next_experiment": "Collect recovery demonstrations earlier in failed grasp/transport trajectories, while retaining execution length 4 and the existing normalization/validation split. Use new held-out seeds for model selection confirmation.",
+  "decision": "Keep current ex3.pt and official result unchanged. Do not add history or obstacle features without further evidence/interface validation."
+}

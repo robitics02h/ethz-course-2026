@@ -1,0 +1,115 @@
+{
+  "status": "complete_no_transport_weighting_advantage",
+  "initial_checkpoint": "checkpoints/multi_cube/ex3_recovery_weight0.pt",
+  "intervention": "Double training sampling weight for lifted, held target away from bin, using only original demonstrations",
+  "controls": "Same initialization, 40 epochs, seed42, lr3e-5, frozen normalization/validation, replacement sampler and total draw count; 0% recovery data",
+  "trace_development_seed": 20269000,
+  "evaluation_seed": 20272000,
+  "evaluation_episodes": 500,
+  "selection": "Best original fixed validation MSE; no checkpoint epoch selected by rollout",
+  "hashes": {
+    "ex3.pt": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+    "ex3_result.hwresult": "49fd465564f721bb75de88cd0c70cde3e993ce3615f8a823c2f759424807a96a",
+    "checkpoints/multi_cube/ex3_recovery_weight0.pt": "e6ab1be6b19ecdcfe0fe5b95947a8c5bd524e4c281c60d29eaf9d62feb014ba5"
+  },
+  "training_results": {
+    "1": {
+      "checkpoint": "checkpoints/multi_cube/ex3_transport_weight1.pt",
+      "epoch": 21,
+      "val_loss": 0.063650962448772,
+      "transport_sampling_fraction": null,
+      "normalization_verified_unchanged": true,
+      "validation_episode_ids": [
+        28,
+        55,
+        18,
+        24,
+        7,
+        17
+      ]
+    },
+    "2": {
+      "checkpoint": "checkpoints/multi_cube/ex3_transport_weight2.pt",
+      "epoch": 23,
+      "val_loss": 0.06386406073850652,
+      "transport_sampling_fraction": 0.36748905690409855,
+      "normalization_verified_unchanged": true,
+      "validation_episode_ids": [
+        28,
+        55,
+        18,
+        24,
+        7,
+        17
+      ]
+    }
+  },
+  "results": {
+    "initial": {
+      "successes": 486,
+      "episodes": 500,
+      "failures": {
+        "transport_or_place": 7,
+        "no_lift": 6,
+        "not_released": 1
+      },
+      "official_successes": 99
+    },
+    "control": {
+      "successes": 490,
+      "episodes": 500,
+      "failures": {
+        "transport_or_place": 7,
+        "no_lift": 2,
+        "not_released": 1
+      },
+      "fixed_vs_initial": [
+        54,
+        178,
+        192,
+        214,
+        234,
+        483
+      ],
+      "regressed_vs_initial": [
+        3,
+        44
+      ],
+      "official_successes": 99
+    },
+    "focus": {
+      "successes": 489,
+      "episodes": 500,
+      "failures": {
+        "transport_or_place": 8,
+        "no_lift": 2,
+        "not_released": 1
+      },
+      "fixed_vs_initial": [
+        54,
+        83,
+        168,
+        178,
+        214,
+        234,
+        483
+      ],
+      "regressed_vs_initial": [
+        3,
+        57,
+        195,
+        362
+      ],
+      "official_successes": 99
+    }
+  },
+  "decision": "Keep incumbent ex3.pt and its official result unchanged. Preserve both new 99/100 candidates separately. Weighted transport training did not beat its matched unweighted control (489 vs 490 out of 500); improvements over the initial candidate are small.",
+  "findings": [
+    "Six of nine inspected development transport failures ended farther from the bin while the cube remained near the hand, with substantial mocap/hand lag.",
+    "Transport-stage oversampling from 22.5% to 36.7% did not reduce transport failures on the fresh paired set: initial7/control7/focus8.",
+    "Most observed improvement over the initial candidate is fewer no-lift failures (6 to 2), rather than better transport."
+  ],
+  "next_experiment": "Expand ordinary successful demonstrations across new initial layouts, retaining consistent expert behavior; old recovery data and mere stage reweighting have not shown benefits.",
+  "integrity_verified": true,
+  "limits": "One training seed, 500 paired new scenes; no causal claim about control lag. Confirmation2000 scenes were not used for this training/diagnosis."
+}

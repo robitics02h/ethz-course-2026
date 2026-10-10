@@ -1,0 +1,139 @@
+{
+  "status": "complete_incumbent_retained_candidate_preserved",
+  "baseline": "ex3.pt",
+  "candidate": "checkpoints/multi_cube/ex3_recovery_weight0.pt",
+  "seeds": [
+    20270000,
+    20271000
+  ],
+  "episodes_per_seed": 1000,
+  "strict_success": "Target in bin, gripper open, hand separated for ten steps; no wrong cube in bin",
+  "used_for_training": false,
+  "used_for_selection_of_checkpoint_epoch": false,
+  "promotion_rule": "Candidate improves both seeds and aggregate; exact two-sided paired McNemar p < 0.05; existing official score not worse. Otherwise preserve incumbent.",
+  "hashes": {
+    "ex3.pt": "365b71b9d92adb835eb55f2804ae06b669aa8b5362872f3bbe87e3abd8dece68",
+    "ex3_result.hwresult": "49fd465564f721bb75de88cd0c70cde3e993ce3615f8a823c2f759424807a96a",
+    "checkpoints/multi_cube/ex3_recovery_weight0.pt": "e6ab1be6b19ecdcfe0fe5b95947a8c5bd524e4c281c60d29eaf9d62feb014ba5"
+  },
+  "rounds": [
+    {
+      "seed": 20270000,
+      "baseline_successes": 973,
+      "candidate_successes": 983,
+      "improved": [
+        189,
+        191,
+        292,
+        301,
+        361,
+        395,
+        541,
+        566,
+        648,
+        715,
+        720,
+        801,
+        816,
+        871,
+        933,
+        979
+      ],
+      "regressed": [
+        115,
+        178,
+        203,
+        621,
+        742,
+        961
+      ]
+    },
+    {
+      "seed": 20271000,
+      "baseline_successes": 979,
+      "candidate_successes": 982,
+      "improved": [
+        70,
+        166,
+        187,
+        532,
+        557,
+        584,
+        588,
+        639,
+        647,
+        649,
+        839,
+        861,
+        912
+      ],
+      "regressed": [
+        165,
+        324,
+        411,
+        571,
+        586,
+        669,
+        692,
+        895,
+        896,
+        946
+      ]
+    }
+  ],
+  "totals": {
+    "episodes": 2000,
+    "baseline_successes": 1952,
+    "candidate_successes": 1965,
+    "improved": 29,
+    "regressed": 16,
+    "net_improvement_percentage_points": 0.65,
+    "paired_bootstrap_95percent_difference_percentage_points": [
+      0.0,
+      1.3
+    ],
+    "exact_two_sided_mcnemar_p": 0.07245426016254441
+  },
+  "by_color": {
+    "red": {
+      "episodes": 668,
+      "baseline_successes": 650,
+      "candidate_successes": 655
+    },
+    "green": {
+      "episodes": 666,
+      "baseline_successes": 649,
+      "candidate_successes": 653
+    },
+    "blue": {
+      "episodes": 666,
+      "baseline_successes": 653,
+      "candidate_successes": 657
+    }
+  },
+  "failures": {
+    "baseline": {
+      "transport_or_place": 32,
+      "no_lift": 12,
+      "not_released": 4
+    },
+    "candidate": {
+      "transport_or_place": 24,
+      "not_released": 6,
+      "no_lift": 5
+    }
+  },
+  "promotion_supported": false,
+  "layouts_verified_identical": true,
+  "statistical_limit": "Simulation reset distribution only; one trained candidate. Bootstrap resamples paired episodes, not training runs. Previously inspected test sets excluded.",
+  "decision": "Do not promote under the predefined rule: candidate wins both seeds but exact paired two-sided p=0.07245 exceeds 0.05. Preserve original ex3.pt and ex3_result.hwresult, and retain the official-99 candidate separately.",
+  "official": {
+    "baseline_successes": 98,
+    "candidate_successes": 99,
+    "episodes": 100,
+    "candidate_result": "artifacts/ex3/recovery_weight/control.hwresult"
+  },
+  "integrity_verified": true,
+  "next_focus": "Candidate failures: 24 transport/place, 6 strict-release, 5 no-lift. Use separate development scenes to target transport/place without weakening release. These confirmation scenes have now been inspected; disclose any future reuse and use new held-out scenes for final validation.",
+  "limits": "Empirical success on this simulator reset distribution, not universal reliability. Both models evaluated on identical 2000 layouts; no checkpoint or training changes during confirmation."
+}

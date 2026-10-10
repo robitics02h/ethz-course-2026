@@ -1,0 +1,37 @@
+# Local Python environment and build/cache files
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+/build/
+/dist/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+/htmlcov/
+
+# Generated datasets, checkpoints and signed evaluation outputs
+/datasets/
+/checkpoints/
+*.zarr/
+*.pt
+*.pth
+*.ckpt
+*.hwresult
+
+# Keep experiment summaries and scripts, not logs, videos or rollout traces.
+/artifacts/**
+!/artifacts/**/
+!/artifacts/**/*run_info.json
+!/artifacts/**/*.py
+
+# Machine-specific controls, logs and local settings
+/hw3/keymap.json
+/MUJOCO_LOG.TXT
+/logs/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
